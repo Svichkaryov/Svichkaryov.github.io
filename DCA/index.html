@@ -99,10 +99,23 @@
           <input type="text" value="" id="cipher_oss_param">
         </td>
       </tr>
-		  <tr>
-        <td><p>Input cube indexes</p></td>
+      <tr>
+		  	<td><p>Cube form input</p></td>
+        <td>
+		  		<form>
+		  			<select id="cube_form">
+		  				<option value=-1></option>
+		  				<option value=1>Int</option>
+		  				<option value=2>Indexes</option>
+		  			</select>
+		  		</form>
+        </td>
+      </tr>
+		  
+      <tr>
+        <td><p>Cube</p></td>
           <td>
-            <input type="text" value="" id="cube_indexes">
+            <input type="text" value="" id="cube">
             <input type="button" value="Find superpoly" id="superpoly_find">
           </td>
         </tr>
@@ -199,16 +212,28 @@
       var roundNum = document.getElementById("cipher_round_number").value;
       
       var ossList = document.getElementById("cipher_oss");
-      var ossId = cipherList.options[cipherList.selectedIndex].value;
+      var ossId = ossList.options[ossList.selectedIndex].value;
 
       var ossParam = document.getElementById("cipher_oss_param").value;
+
+      var cubeFormList = document.getElementById("cube_form");
+      var cubeFormId = cubeFormList.options[cubeFormList.selectedIndex].value;
+
       if(cipherId==-1 || ossId==-1 || roundNum=="" || ossParam=="")
       {
         alert("Input all params");
       }
       else{
-        var cube_indexes = document.getElementById("cube_indexes").value;
-        var cube = convertCI2Int(cube_indexes);
+        var cube;
+        if(cubeFormId==2)
+        {
+          var cube_indexes = document.getElementById("cube").value;
+          cube = convertCI2Int(cube_indexes);
+        }
+        else if(cubeFormId==1)
+        {
+          cube = document.getElementById("cube").value;
+        }
         Module.ccall('user_mode', null, ['number', 'number', 'number', 'number', 'number'], 
         [cipherId, roundNum, ossId, ossParam, cube]);
       }
@@ -218,7 +243,7 @@
       var b = cubeIndexes.split(',').map(Number);
       var cube = 0;
       b.forEach(function(item, i) {
-			cube = cube | (1 << item);
+        cube = cube | (1 << item);
       });
       return cube >>> 0;
     }
