@@ -27,6 +27,24 @@
         border-radius: 100%;
         background-color: rgb(200,100,250);
       }
+
+        .text_field {
+    display: inline-block; /* Строчно-блочный элемент */
+    position: relative; /* Относительное позиционирование */
+        }
+   .text_field:hover::after {
+    content: attr(data-title); /* Выводим текст */
+    position: absolute; /* Абсолютное позиционирование */
+    left: 20%; top: 30%; /* Положение подсказки */
+    z-index: 1; /* Отображаем подсказку поверх других элементов */
+    background: rgba(255,255,230,0.9); /* Полупрозрачный цвет фона */
+    font-family: Arial, sans-serif; /* Гарнитура шрифта */
+    font-size: 11px; /* Размер текста подсказки */
+    padding: 5px 10px; /* Поля */
+    border: 1px solid #333; /* Параметры рамки */
+   }
+
+
       @-webkit-keyframes rotation {
         from {-webkit-transform: rotate(0deg);}
         to {-webkit-transform: rotate(360deg);}
@@ -62,7 +80,7 @@
   <form>
     <table id="ca_params">
       <tr>
-        <td><p>Cipher</p></td>
+        <td><p>Cipher</p></td> 
         <td>
 		  		<form>
 		  			<select id="cipher">
@@ -81,7 +99,11 @@
           </td>
         </tr>    
       <tr>
-		  	<td><p>OutputStateStrategy (OSS)</p></td>
+        <td title="As a parameter z for block ciphers, 
+        a specific bit: 
+        1)of the Hamming weight from the entire state of the encryption function, 
+        2)of the Hamming weight from a specific byte, or 
+        3)any bit can be used."><p>OutputStateStrategy (OSS)</p></td>
         <td>
 		  		<form>
 		  			<select id="cipher_oss">
@@ -94,7 +116,9 @@
         </td>
       </tr>
 		  <tr>
-        <td><p>OSSParam</p></td>
+        <td title="For OSS==HW_BYTE : this parameter uses the following format: enter a two byte number: 
+        the zero byte contains the number of the output bit and 
+        the first byte is the number of the byte from which the Hamming weight is taken"><p>OSSParam</p></td>
         <td>
           <input type="text" value="" id="cipher_oss_param">
         </td>
@@ -204,45 +228,46 @@
           if (text) Module.printErr('[post-exception status] ' + text);
         };
       };
-	  
-	  document.getElementById("superpoly_find").addEventListener('click', function(){
-      var cipherList = document.getElementById("cipher");
-      var cipherId = cipherList.options[cipherList.selectedIndex].value;
-
-      var roundNum = document.getElementById("cipher_round_number").value;
       
-      var ossList = document.getElementById("cipher_oss");
-      var ossId = ossList.options[ossList.selectedIndex].value;
+      document.getElementById("superpoly_find").addEventListener('click', function(){
+        var cipherList = document.getElementById("cipher");
+        var cipherId = cipherList.options[cipherList.selectedIndex].value;
 
-      var ossParam = document.getElementById("cipher_oss_param").value;
+        var roundNum = document.getElementById("cipher_round_number").value;
+        
+        var ossList = document.getElementById("cipher_oss");
+        var ossId = ossList.options[ossList.selectedIndex].value;
 
-      var cubeFormList = document.getElementById("cube_form");
-      var cubeFormId = cubeFormList.options[cubeFormList.selectedIndex].value;
+        var ossParam = document.getElementById("cipher_oss_param").value;
 
-      if(cipherId==-1 || ossId==-1 || roundNum=="" || ossParam=="")
-      {
-        alert("Input all params");
-      }
-      else{
-        var cube;
-        if(cubeFormId==2)
+        var cubeFormList = document.getElementById("cube_form");
+        var cubeFormId = cubeFormList.options[cubeFormList.selectedIndex].value;
+
+        if(cipherId==-1 || ossId==-1 || roundNum.trim()=="" || ossParam.trim()=="")
         {
-          var cube_indexes = document.getElementById("cube").value;
-          cube = convertCI2Int(cube_indexes);
+          alert("Input all params");
         }
-        else if(cubeFormId==1)
+        else
         {
-          cube = document.getElementById("cube").value;
+          var cube;
+          if(cubeFormId==2)
+          {
+            var cube_indexes = document.getElementById("cube").value;
+            cube = convertCI2Int(cube_indexes);
+          }
+          else if(cubeFormId==1)
+          {
+            cube = document.getElementById("cube").value;
+          }
+          Module.ccall('user_mode', null, ['number', 'number', 'number', 'number', 'number'], 
+          [cipherId, roundNum, ossId, ossParam, cube]);
         }
-        Module.ccall('user_mode', null, ['number', 'number', 'number', 'number', 'number'], 
-        [cipherId, roundNum, ossId, ossParam, cube]);
-      }
-    });
+      });
 	  
 	  function convertCI2Int(cubeIndexes) {
-      var b = cubeIndexes.split(',').map(Number);
+      var cubeIndexesArr = cubeIndexes.split(/,| /).map(Number);
       var cube = 0;
-      b.forEach(function(item, i) {
+      cubeIndexesArr.forEach(function(item, i) {
         cube = cube | (1 << item);
       });
       return cube >>> 0;
