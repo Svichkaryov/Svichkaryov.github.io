@@ -1,281 +1,278 @@
 <!doctype html>
 <html lang="en-us">
-  <head>
-    <meta charset="utf-8">
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <title>Emscripten-Generated Code</title>
-    <style>
-      .emscripten { padding-right: 0; margin-left: auto; margin-right: auto; display: block; }
-      textarea.emscripten { font-family: monospace; width: 80%; }
-      div.emscripten { text-align: center; }
-      div.emscripten_border { border: 1px solid black; }
-      /* the canvas *must not* have any border or padding, or mouse coords will be wrong */
-      canvas.emscripten { border: 0px none; background-color: black; }
 
-      .spinner {
-        height: 50px;
-        width: 50px;
-        margin: 0px auto;
-        -webkit-animation: rotation .8s linear infinite;
-        -moz-animation: rotation .8s linear infinite;
-        -o-animation: rotation .8s linear infinite;
-        animation: rotation 0.8s linear infinite;
-        border-left: 10px solid rgb(0,150,240);
-        border-right: 10px solid rgb(0,150,240);
-        border-bottom: 10px solid rgb(0,150,240);
-        border-top: 10px solid rgb(100,0,200);
-        border-radius: 100%;
-        background-color: rgb(200,100,250);
-      }
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <title>Emscripten-Generated Code</title>
 
-        .text_field {
-    display: inline-block; /* Строчно-блочный элемент */
-    position: relative; /* Относительное позиционирование */
-        }
-   .text_field:hover::after {
-    content: attr(data-title); /* Выводим текст */
-    position: absolute; /* Абсолютное позиционирование */
-    left: 20%; top: 30%; /* Положение подсказки */
-    z-index: 1; /* Отображаем подсказку поверх других элементов */
-    background: rgba(255,255,230,0.9); /* Полупрозрачный цвет фона */
-    font-family: Arial, sans-serif; /* Гарнитура шрифта */
-    font-size: 11px; /* Размер текста подсказки */
-    padding: 5px 10px; /* Поля */
-    border: 1px solid #333; /* Параметры рамки */
-   }
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML"></script>
 
+</head>
+<link rel="stylesheet" type="text/css" href="src/css/style.css">
 
-      @-webkit-keyframes rotation {
-        from {-webkit-transform: rotate(0deg);}
-        to {-webkit-transform: rotate(360deg);}
-      }
-      @-moz-keyframes rotation {
-        from {-moz-transform: rotate(0deg);}
-        to {-moz-transform: rotate(360deg);}
-      }
-      @-o-keyframes rotation {
-        from {-o-transform: rotate(0deg);}
-        to {-o-transform: rotate(360deg);}
-      }
-      @keyframes rotation {
-        from {transform: rotate(0deg);}
-        to {transform: rotate(360deg);}
-      }
-
-    </style>
-  </head>
-
-  <body>
-    <hr/>
-    <figure style="overflow:visible;" id="spinner"><div class="spinner"></div><center style="margin-top:0.5em"><strong>emscripten</strong></center></figure>
-    <div class="emscripten" id="status">Downloading...</div>
-    <div class="emscripten">
-      <progress value="0" max="100" id="progress" hidden=1></progress>  
-    </div>
-    <div class="emscripten_border">
-      <canvas class="emscripten" id="canvas" oncontextmenu="event.preventDefault()"></canvas>
-    </div>
-    <hr/>
-  
-  <form>
-    <table id="ca_params">
-      <tr>
-        <td><p>Cipher</p></td> 
-        <td>
-		  		<form>
-		  			<select id="cipher">
-              <option value=-1> </option>
-              <option value=1>Simeck_32_64</option>
-		  				<option value=2>Simon_32_64</option>
-              <option value=3>Speck_32_64</option>
-		  			</select>
-		  		</form>
-        </td>
-		  </tr>
-      <tr>
-          <td><p>Round</p></td>
-          <td>
-            <input type="text" value="" id="cipher_round_number">
-          </td>
-        </tr>    
-      <tr>
-        <td title="As a parameter z for block ciphers, 
-        a specific bit: 
-        1)of the Hamming weight from the entire state of the encryption function, 
-        2)of the Hamming weight from a specific byte, or 
-        3)any bit can be used."><p>OutputStateStrategy (OSS)</p></td>
-        <td>
-		  		<form>
-		  			<select id="cipher_oss">
-		  				<option value=-1></option>
-		  				<option value=1>HW</option>
-		  				<option value=2>HW_BYTE</option>
-		  				<option value=3>RAW_STATE</option>
-		  			</select>
-		  		</form>
-        </td>
-      </tr>
-		  <tr>
-        <td title="For OSS==HW_BYTE : this parameter uses the following format: enter a two byte number: 
-        the zero byte contains the number of the output bit and 
-        the first byte is the number of the byte from which the Hamming weight is taken"><p>OSSParam</p></td>
-        <td>
-          <input type="text" value="" id="cipher_oss_param">
-        </td>
-      </tr>
-      <tr>
-		  	<td><p>Cube form input</p></td>
-        <td>
-		  		<form>
-		  			<select id="cube_form">
-		  				<option value=-1></option>
-		  				<option value=1>Int</option>
-		  				<option value=2>Indexes</option>
-		  			</select>
-		  		</form>
-        </td>
-      </tr>
-		  
-      <tr>
-        <td><p>Cube</p></td>
-          <td>
-            <input type="text" value="" id="cube">
-            <input type="button" value="Find superpoly" id="superpoly_find">
-          </td>
-        </tr>
-  </table>
-</form>
-
-    <hr/>
-    <textarea class="emscripten" id="output" rows="8"></textarea>
-    <hr>
-	
-	
-    <script type='text/javascript'>
-      var statusElement = document.getElementById('status');
-      var progressElement = document.getElementById('progress');
-      var spinnerElement = document.getElementById('spinner');
-
-      var Module = {
-        preRun: [],
-        postRun: [],
-        print: (function() {
-          var element = document.getElementById('output');
-          if (element) element.value = ''; // clear browser cache
-          return function(text) {
-            if (arguments.length > 1) text = Array.prototype.slice.call(arguments).join(' ');
-            // These replacements are necessary if you render to raw HTML
-            //text = text.replace(/&/g, "&amp;");
-            //text = text.replace(/</g, "&lt;");
-            //text = text.replace(/>/g, "&gt;");
-            //text = text.replace('\n', '<br>', 'g');
-            console.log(text);
-            if (element) {
-              element.value += text + "\n";
-              element.scrollTop = element.scrollHeight; // focus on bottom
-            }
-          };
-        })(),
-        printErr: function(text) {
-          if (arguments.length > 1) text = Array.prototype.slice.call(arguments).join(' ');
-          if (0) { // XXX disabled for safety typeof dump == 'function') {
-            dump(text + '\n'); // fast, straight to the real console
-          } else {
-            console.error(text);
-          }
-        },
-        canvas: (function() {
-          var canvas = document.getElementById('canvas');
-
-          // As a default initial behavior, pop up an alert when webgl context is lost. To make your
-          // application robust, you may want to override this behavior before shipping!
-          // See http://www.khronos.org/registry/webgl/specs/latest/1.0/#5.15.2
-          canvas.addEventListener("webglcontextlost", function(e) { alert('WebGL context lost. You will need to reload the page.'); e.preventDefault(); }, false);
-
-          return canvas;
-        })(),
-        setStatus: function(text) {
-          if (!Module.setStatus.last) Module.setStatus.last = { time: Date.now(), text: '' };
-          if (text === Module.setStatus.text) return;
-          var m = text.match(/([^(]+)\((\d+(\.\d+)?)\/(\d+)\)/);
-          var now = Date.now();
-          if (m && now - Date.now() < 30) return; // if this is a progress update, skip it if too soon
-          if (m) {
-            text = m[1];
-            progressElement.value = parseInt(m[2])*100;
-            progressElement.max = parseInt(m[4])*100;
-            progressElement.hidden = false;
-            spinnerElement.hidden = false;
-          } else {
-            progressElement.value = null;
-            progressElement.max = null;
-            progressElement.hidden = true;
-            if (!text) spinnerElement.hidden = true;
-          }
-          statusElement.innerHTML = text;
-        },
-        totalDependencies: 0,
-        monitorRunDependencies: function(left) {
-          this.totalDependencies = Math.max(this.totalDependencies, left);
-          Module.setStatus(left ? 'Preparing... (' + (this.totalDependencies-left) + '/' + this.totalDependencies + ')' : 'All downloads complete.');
-        }
-      };
-      Module.setStatus('Downloading...');
-      window.onerror = function() {
-        Module.setStatus('Exception thrown, see JavaScript console');
-        spinnerElement.style.display = 'none';
-        Module.setStatus = function(text) {
-          if (text) Module.printErr('[post-exception status] ' + text);
-        };
-      };
+<body>
+  <div class="notebook">
+    <input type="radio" name="notebook1" id="notebook1_1" checked><label for="notebook1_1">Main</label><input
+      type="radio" name="notebook1" id="notebook1_2"><label for="notebook1_2">Cube validator</label><input type="radio"
+      name="notebook1" id="notebook1_3"><label for="notebook1_3">About</label>
+    
+      <div>
+          <p>Site offers cubes validation</p>
+        </div>
+      <div>
       
-      document.getElementById("superpoly_find").addEventListener('click', function(){
-        var cipherList = document.getElementById("cipher");
-        var cipherId = cipherList.options[cipherList.selectedIndex].value;
+      <hr />
+      <figure style="overflow:visible;" id="spinner">
+        <div class="spinner"></div>
+        <center style="margin-top:0.5em"><strong>emscripten</strong></center>
+      </figure>
+      <div class="emscripten" id="status">Downloading...</div>
+      <div class="emscripten">
+        <progress value="0" max="100" id="progress" hidden=1></progress>
+      </div>
+      <div class="emscripten_border">
+        <canvas class="emscripten" id="canvas" oncontextmenu="event.preventDefault()"></canvas>
+      </div>
+      <hr />
 
-        var roundNum = document.getElementById("cipher_round_number").value;
-        
-        var ossList = document.getElementById("cipher_oss");
-        var ossId = ossList.options[ossList.selectedIndex].value;
+      <form>
+        <table>
 
-        var ossParam = document.getElementById("cipher_oss_param").value;
+          <tr>
+            <td>
+              <table id="ca_params">
+                <tr>
+                  <td>
+                    <p>Cipher</p>
+                  </td>
+                  <td>
+                    <form>
+                      <select id="cipher">
+                        <option value=-1> </option>
+                        <option value=1>Simeck_32_64</option>
+                        <option value=2>Simon_32_64</option>
+                        <option value=3>Speck_32_64</option>
+                      </select>
+                    </form>
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <p>Round</p>
+                  </td>
+                  <td>
+                    <input type="text" value="" id="cipher_round_number">
+                  </td>
+                </tr>
+                <tr>
+                  <td title="As a parameter z for block ciphers, 
+                              a specific bit: 
+                              1)of the Hamming weight from the entire state of the encryption function f(v,k), 
+                              2)of the Hamming weight from a specific byte, or 
+                              3)any bit can be used.">
+                    <p>OutputStateStrategy (OSS)</p>
+                  </td>
+                  <td>
+                    <form>
+                      <select id="cipher_oss">
+                        <option value=-1></option>
+                        <option value=1>HW</option>
+                        <option value=2>HW_BYTE</option>
+                        <option value=3>RAW_STATE</option>
+                      </select>
+                    </form>
+                  </td>
+                </tr>
+                <tr>
+                  <td title="For OSS==HW_BYTE : this parameter uses the following format: enter a two byte number: 
+                              the zero byte contains the number of the output bit and 
+                              the first byte is index of the byte from which the Hamming weight is taken">
+                    <p>OSSParam</p>
+                  </td>
+                  <td>
+                    <input type="text" value="" id="cipher_oss_param">
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <p>Cube form input</p>
+                  </td>
+                  <td>
+                    <form>
+                      <select id="cube_form">
+                        <option value=-1></option>
+                        <option value=1>Int</option>
+                        <option value=2>Indexes</option>
+                      </select>
+                    </form>
+                  </td>
+                </tr>
 
-        var cubeFormList = document.getElementById("cube_form");
-        var cubeFormId = cubeFormList.options[cubeFormList.selectedIndex].value;
+                <tr>
+                  <td>
+                    <p>Cube</p>
+                  </td>
+                  <td>
+                    <input type="text" value="" id="cube">
+                    <input type="button" value="Find superpoly" id="superpoly_find">
+                  </td>
+                </tr>
+              </table>
 
-        if(cipherId==-1 || ossId==-1 || roundNum.trim()=="" || ossParam.trim()=="")
-        {
-          alert("Input all params");
-        }
-        else
-        {
-          var cube;
-          if(cubeFormId==2)
-          {
-            var cube_indexes = document.getElementById("cube").value;
-            cube = convertCI2Int(cube_indexes);
+            </td>
+
+            <td>
+              <table>
+                <tr><img src="src/img/BlackBox.jpg"></tr>
+              </table>
+            </td>
+
+          </tr>
+        </table>
+      </form>
+
+      <hr />
+      <textarea class="emscripten" id="output" rows="8"></textarea>
+      <hr>
+
+      <script type='text/javascript'>
+        var statusElement = document.getElementById('status');
+        var progressElement = document.getElementById('progress');
+        var spinnerElement = document.getElementById('spinner');
+    
+        var Module = {
+          preRun: [],
+          postRun: [],
+          print: (function () {
+            var element = document.getElementById('output');
+            if (element) element.value = ''; // clear browser cache
+            return function (text) {
+              if (arguments.length > 1) text = Array.prototype.slice.call(arguments).join(' ');
+              // These replacements are necessary if you render to raw HTML
+              //text = text.replace(/&/g, "&amp;");
+              //text = text.replace(/</g, "&lt;");
+              //text = text.replace(/>/g, "&gt;");
+              //text = text.replace('\n', '<br>', 'g');
+              console.log(text);
+              if (element) {
+                element.value += text + "\n";
+                element.scrollTop = element.scrollHeight; // focus on bottom
+              }
+            };
+          })(),
+          printErr: function (text) {
+            if (arguments.length > 1) text = Array.prototype.slice.call(arguments).join(' ');
+            if (0) { // XXX disabled for safety typeof dump == 'function') {
+              dump(text + '\n'); // fast, straight to the real console
+            } else {
+              console.error(text);
+            }
+          },
+          canvas: (function () {
+            var canvas = document.getElementById('canvas');
+    
+            // As a default initial behavior, pop up an alert when webgl context is lost. To make your
+            // application robust, you may want to override this behavior before shipping!
+            // See http://www.khronos.org/registry/webgl/specs/latest/1.0/#5.15.2
+            canvas.addEventListener("webglcontextlost", function (e) { alert('WebGL context lost. You will need to reload the page.'); e.preventDefault(); }, false);
+    
+            return canvas;
+          })(),
+          setStatus: function (text) {
+            if (!Module.setStatus.last) Module.setStatus.last = { time: Date.now(), text: '' };
+            if (text === Module.setStatus.text) return;
+            var m = text.match(/([^(]+)\((\d+(\.\d+)?)\/(\d+)\)/);
+            var now = Date.now();
+            if (m && now - Date.now() < 30) return; // if this is a progress update, skip it if too soon
+            if (m) {
+              text = m[1];
+              progressElement.value = parseInt(m[2]) * 100;
+              progressElement.max = parseInt(m[4]) * 100;
+              progressElement.hidden = false;
+              spinnerElement.hidden = false;
+            } else {
+              progressElement.value = null;
+              progressElement.max = null;
+              progressElement.hidden = true;
+              if (!text) spinnerElement.hidden = true;
+            }
+            statusElement.innerHTML = text;
+          },
+          totalDependencies: 0,
+          monitorRunDependencies: function (left) {
+            this.totalDependencies = Math.max(this.totalDependencies, left);
+            Module.setStatus(left ? 'Preparing... (' + (this.totalDependencies - left) + '/' + this.totalDependencies + ')' : 'All downloads complete.');
           }
-          else if(cubeFormId==1)
-          {
-            cube = document.getElementById("cube").value;
+        };
+        Module.setStatus('Downloading...');
+        window.onerror = function () {
+          Module.setStatus('Exception thrown, see JavaScript console');
+          spinnerElement.style.display = 'none';
+          Module.setStatus = function (text) {
+            if (text) Module.printErr('[post-exception status] ' + text);
+          };
+        };
+    
+        document.getElementById("superpoly_find").addEventListener('click', function () {
+          var cipherList = document.getElementById("cipher");
+          var cipherId = cipherList.options[cipherList.selectedIndex].value;
+    
+          var roundNum = document.getElementById("cipher_round_number").value;
+    
+          var ossList = document.getElementById("cipher_oss");
+          var ossId = ossList.options[ossList.selectedIndex].value;
+    
+          var ossParam = document.getElementById("cipher_oss_param").value;
+    
+          var cubeFormList = document.getElementById("cube_form");
+          var cubeFormId = cubeFormList.options[cubeFormList.selectedIndex].value;
+    
+          if (cipherId == -1 || ossId == -1 || roundNum.trim() == "" || ossParam.trim() == "") {
+            alert("Input all params");
           }
-          Module.ccall('user_mode', null, ['number', 'number', 'number', 'number', 'number'], 
-          [cipherId, roundNum, ossId, ossParam, cube]);
+          else {
+            var cube;
+            if (cubeFormId == 2) {
+              var cube_indexes = document.getElementById("cube").value;
+              cube = convertCI2Int(cube_indexes);
+            }
+            else if (cubeFormId == 1) {
+              cube = document.getElementById("cube").value;
+            }
+            Module.ccall('user_mode', null, ['number', 'number', 'number', 'number', 'number'],
+              [cipherId, roundNum, ossId, ossParam, cube]);
+          }
+        });
+    
+        function convertCI2Int(cubeIndexes) {
+          var cubeIndexesArr = cubeIndexes.split(/,| /).map(Number);
+          var cube = 0;
+          cubeIndexesArr.forEach(function (item, i) {
+            cube = cube | (1 << item);
+          });
+          return cube >>> 0;
         }
-      });
-	  
-	  function convertCI2Int(cubeIndexes) {
-      var cubeIndexesArr = cubeIndexes.split(/,| /).map(Number);
-      var cube = 0;
-      cubeIndexesArr.forEach(function(item, i) {
-        cube = cube | (1 << item);
-      });
-      return cube >>> 0;
-    }
-	  
-    </script>
-    <script async type="text/javascript" src="userMode.js"></script>
-  </body>
+    
+      </script>
+      <script async type="text/javascript" src="userMode.js"></script>
+
+    </div>
+
+    <div>
+      <h3>Literature</h3>
+      <ol>
+        <li>Dinur I., Shamir A. <a href="https://eprint.iacr.org/2008/385.pdf">
+          Cube Attacks on Tweakable Black Box Polynomials. </a></li>
+        <li>Aumasson J-P., Dinur I., Meier W., Shamir A. <a href="https://goo.gl/Gh4vpM">
+          Cube Testers and Key Recovery Attacks On ReducedRound MD6 and Trivium</a></li>
+      </ol>
+    </div>
+
+  </div>
+
+
+ 
+</body>
+
 </html>
-	
-

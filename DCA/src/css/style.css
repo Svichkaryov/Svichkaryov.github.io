@@ -1,0 +1,120 @@
+.emscripten {
+  padding-right: 0;
+  margin-left: auto;
+  margin-right: auto;
+  display: block;
+}
+
+textarea.emscripten {
+  font-family: monospace;
+  width: 80%;
+}
+
+div.emscripten {
+  text-align: center;
+}
+
+div.emscripten_border {
+  border: 1px solid black;
+}
+
+/* the canvas *must not* have any border or padding, or mouse coords will be wrong */
+
+canvas.emscripten {
+  border: 0px none;
+  background-color: black;
+}
+
+.spinner {
+  height: 50px;
+  width: 50px;
+  margin: 0px auto;
+  -webkit-animation: rotation .8s linear infinite;
+  -moz-animation: rotation .8s linear infinite;
+  -o-animation: rotation .8s linear infinite;
+  animation: rotation 0.8s linear infinite;
+  border-left: 10px solid rgb(0, 150, 240);
+  border-right: 10px solid rgb(0, 150, 240);
+  border-bottom: 10px solid rgb(0, 150, 240);
+  border-top: 10px solid rgb(100, 0, 200);
+  border-radius: 100%;
+  background-color: rgb(200, 100, 250);
+}
+
+.text_field {
+  display: inline-block;
+  /* Строчно-блочный элемент */
+  position: relative;
+  /* Относительное позиционирование */
+}
+
+.text_field:hover::after {
+  content: attr(data-title);
+  /* Выводим текст */
+  position: absolute;
+  /* Абсолютное позиционирование */
+  left: 20%;
+  top: 30%;
+  /* Положение подсказки */
+  z-index: 1;
+  /* Отображаем подсказку поверх других элементов */
+  background: rgba(255, 255, 230, 0.9);
+  /* Полупрозрачный цвет фона */
+  font-family: Arial, sans-serif;
+  /* Гарнитура шрифта */
+  font-size: 11px;
+  /* Размер текста подсказки */
+  padding: 5px 10px;
+  /* Поля */
+  border: 1px solid #333;
+  /* Параметры рамки */
+}
+
+@-webkit-keyframes rotation {
+  from {
+    -webkit-transform: rotate(0deg);
+  }
+  to {
+    -webkit-transform: rotate(360deg);
+  }
+}
+
+@-moz-keyframes rotation {
+  from {
+    -moz-transform: rotate(0deg);
+  }
+  to {
+    -moz-transform: rotate(360deg);
+  }
+}
+
+@-o-keyframes rotation {
+  from {
+    -o-transform: rotate(0deg);
+  }
+  to {
+    -o-transform: rotate(360deg);
+  }
+}
+
+@keyframes rotation {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.notebook>div {
+  white-space: normal;
+  display: none;
+  border: 1px solid gray;
+  border-top: none;
+  margin: 0px;
+  padding: 2px 20px;
+}
+
+.notebook>input:nth-of-type(1):checked~div:nth-of-type(1), .notebook>input:nth-of-type(2):checked~div:nth-of-type(2), .notebook>input:nth-of-type(3):checked~div:nth-of-type(3), .notebook>input:nth-of-type(4):checked~div:nth-of-type(4) {
+  display: block;
+}
